@@ -11,11 +11,14 @@ typealias RefactoringListener = (refactorings: List<Refactoring>) -> Unit
 @Service
 class ActionService(private val project: Project) {
     private val listeners = mutableListOf<RefactoringListener>()
+    private val allRefactorings = mutableListOf<Refactoring>()
 
     fun update(file: VirtualFile) {
-        val (from, to) = FileSnapshotProvider.getAndBuildSnapshot(project, file) ?: return
+        val (from, to) = FileSnapshotProvider.getSnapshot(project, file) ?: return
         val refactorings = ActionMiner.getRefactoring(from, to)
-        listeners.forEach { it(refactorings) }
+        FileSnapshotProvider.buildSnapshot(project, file)
+        allRefactorings += refactorings
+        listeners.forEach { it(allRefactorings) }
     }
 
     fun addRefactoringListener(listener: RefactoringListener) {

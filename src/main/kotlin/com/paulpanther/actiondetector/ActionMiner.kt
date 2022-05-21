@@ -9,7 +9,8 @@ object ActionMiner {
         // TODO this only works for single files in parent directories
         val model1 = UMLModelASTReader(from.parentFile).umlModel
         val model2 = UMLModelASTReader(to.parentFile).umlModel
-        val diff = model1.diff(model2)
-        return diff.refactorings
+        val diff = model2.diff(model1)
+        val refs = diff.refactorings
+        return refs
     }
 }
