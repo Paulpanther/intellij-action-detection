@@ -19,8 +19,14 @@
     </applicationListeners>
     <actions>
         <action id="com.paulpanther.actiondetector.CreateSnapshotAction"
-                class="com.paulpanther.actiondetector.CreateSnapshotAction" text="Show Refactoring">
-            <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl alt R"/>
+                class="com.paulpanther.actiondetector.CreateSnapshotAction" text="Create Snapshot">
+            <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl S"/>
+        </action>
+        <action id="com.paulpanther.actiondetector.ShowRefactoringsAction"
+                class="com.paulpanther.actiondetector.ShowRefactoringsAction"
+                text="Show Refactorings">
+            <keyboard-shortcut keymap="$default"
+                               first-keystroke="shift ctrl alt R"/>
         </action>
     </actions>
 </idea-plugin>

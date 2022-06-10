@@ -39,8 +39,8 @@ object FileSnapshotProvider {
     }
 
     private fun getSnapshotPaths(project: Project, file: VirtualFile): Pair<Path, Path> {
-        val from = file.toNioPath()
-        val to = Paths.get(project.basePath, snapshotsDir, from.name)
+        val to = file.toNioPath()
+        val from = Paths.get(project.basePath, snapshotsDir, from.name)
         return Pair(from, to)
     }
 }

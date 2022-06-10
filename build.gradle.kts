@@ -22,10 +22,13 @@ version = properties("pluginVersion")
 // Configure project's dependencies
 repositories {
     mavenCentral()
+    mavenLocal()
 }
 
 dependencies {
-    implementation("com.github.tsantalis:refactoring-miner:2.2.0")
+    implementation("com.github.gumtreediff:core:3.1.0-SNAPSHOT")
+    implementation("com.github.gumtreediff:client:3.1.0-SNAPSHOT")
+    implementation("com.github.gumtreediff:gen.treesitter:3.1.0-SNAPSHOT")
 }
 
 // Configure Gradle IntelliJ Plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin

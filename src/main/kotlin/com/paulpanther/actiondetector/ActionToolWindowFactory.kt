@@ -1,12 +1,12 @@
 package com.paulpanther.actiondetector
 
+import com.github.gumtreediff.actions.model.Action
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.components.JBScrollPane
-import com.intellij.ui.dsl.builder.*
-import org.refactoringminer.api.Refactoring
+import com.intellij.ui.dsl.builder.panel
 import javax.swing.JPanel
 
 class ActionToolWindowFactory: ToolWindowFactory, DumbAware {
@@ -28,11 +28,11 @@ class ActionToolWindowFactory: ToolWindowFactory, DumbAware {
     private fun actionToolWindow() = JBScrollPane(entriesPane)
 
     @Suppress("UnstableApiUsage")
-    private fun buildEntries(refactorings: List<Refactoring>) {
+    private fun buildEntries(refactorings: List<Action>) {
         entriesPane.add(panel {
             for (ref in refactorings) {
                 row {
-                    label("Ref ${ref.name}")
+                    label(ref.name)
                 }
             }
         })
