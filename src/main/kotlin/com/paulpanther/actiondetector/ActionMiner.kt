@@ -18,14 +18,14 @@ class ActionMiner {
         treeGenerator = JavaTreeSitterTreeGenerator()
     }
 
-    fun getRefactoring(from: File, to: File): List<Action> {
-        val r1 = treeGenerator.generateFrom().file(from.absoluteFile).root
-        val r2 = treeGenerator.generateFrom().file(to.absoluteFile).root
+    fun getRefactoring(original: File, snap: File): List<Action> {
+        val originalRoot = treeGenerator.generateFrom().file(original.absoluteFile).root
+        val snapshotRoot = treeGenerator.generateFrom().file(snap.absoluteFile).root
 
 //        val c1 = File(f1).readText()
 //        val c2 = File(f2).readText()
 
-        val mappings = matcher.match(r1, r2)
+        val mappings = matcher.match(snapshotRoot, originalRoot)
         return editGenerator.computeActions(mappings).asList()
     }
 }

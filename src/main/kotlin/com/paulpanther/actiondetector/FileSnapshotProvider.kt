@@ -20,15 +20,18 @@ object FileSnapshotProvider {
 
     fun buildSnapshot(project: Project, file: VirtualFile) {
         createSnapshotDir(project)
-        val (from, to) = getSnapshotPaths(project, file)
-        Files.copy(from, to, StandardCopyOption.REPLACE_EXISTING)
+        val (original, snapshot) = getSnapshotPaths(project, file)
+        if (!Files.exists(snapshot)) {
+            Files.createFile(snapshot)
+        }
+        Files.copy(original, snapshot, StandardCopyOption.REPLACE_EXISTING)
     }
 
     fun getSnapshot(project: Project, file: VirtualFile): Pair<File, File>? {
-        val (from, to) = getSnapshotPaths(project, file)
-        val toFile = to.toFile()
-        if (!toFile.exists()) return null
-        return Pair(from.toFile(), toFile)
+        val (original, snapshot) = getSnapshotPaths(project, file)
+        val snapFile = snapshot.toFile()
+        if (!snapFile.exists()) return null
+        return Pair(original.toFile(), snapFile)
     }
 
     private fun createSnapshotDir(project: Project) {
@@ -39,8 +42,8 @@ object FileSnapshotProvider {
     }
 
     private fun getSnapshotPaths(project: Project, file: VirtualFile): Pair<Path, Path> {
-        val to = file.toNioPath()
-        val from = Paths.get(project.basePath, snapshotsDir, from.name)
-        return Pair(from, to)
+        val original = file.toNioPath()
+        val snapshot = Paths.get(project.basePath, snapshotsDir, original.name)
+        return Pair(original, snapshot)
     }
 }

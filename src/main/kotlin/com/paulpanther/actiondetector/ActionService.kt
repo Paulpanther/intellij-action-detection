@@ -19,8 +19,8 @@ class ActionService(private val project: Project) {
     }
 
     fun showRefactorings(file: VirtualFile) {
-        val (from, to) = FileSnapshotProvider.getSnapshot(project, file) ?: return
-        val refactorings = miner.getRefactoring(from, to)
+        val (original, snapshot) = FileSnapshotProvider.getSnapshot(project, file) ?: return
+        val refactorings = miner.getRefactoring(original, snapshot)
 //        allRefactorings += refactorings
         listeners.forEach { it(refactorings) }
     }
