@@ -1,3 +1,7 @@
+package com.paulpanther.actiondetector
+
+import Add
+import Remove
 import com.github.gumtreediff.actions.ChawatheScriptGenerator
 import com.github.gumtreediff.actions.EditScript
 import com.github.gumtreediff.actions.EditScriptGenerator

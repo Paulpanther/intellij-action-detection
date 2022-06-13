@@ -8,7 +8,7 @@ import java.io.File
 
 class ActionMiner {
     private val matcher = Matchers.getInstance().matcher
-    private val editGenerator = SimplifiedChawatheScriptGenerator()
+    private val editGenerator = SimpleScriptGenerator()
     private val treeGenerator: JavaTreeSitterTreeGenerator
 
     init {
