@@ -8,11 +8,11 @@ import java.io.File
 
 class ActionMiner {
     private val matcher = Matchers.getInstance().matcher
-    private val editGenerator = SimpleScriptGenerator()
+    private val editGenerator = PerformanceProfilerScriptGenerator(SimpleScriptGenerator(), 1000)
     private val treeGenerator: JavaTreeSitterTreeGenerator
 
     init {
-        val tS = System.getProperty("tree-sitter", "/home/paul/dev/uni/ts-edit-action-detector/tree-sitter-parser/tree-sitter-parser.py")
+        val tS = System.getProperty("tree-sitter", "/Users/anaumann/Development/Study/edit-action-detection/tree-sitter-parser/tree-sitter-parser.py")
         System.setProperty("gt.ts.path", tS)
 
         treeGenerator = JavaTreeSitterTreeGenerator()
@@ -26,6 +26,6 @@ class ActionMiner {
 //        val c2 = File(f2).readText()
 
         val mappings = matcher.match(snapshotRoot, originalRoot)
-        return editGenerator.computeActions(mappings).asList()
+        return editGenerator.computeActions(mappings)?.asList() ?: listOf()
     }
 }
