@@ -27,7 +27,7 @@ class Remove(node: Tree) : Action(node) {
     constructor(action: Delete): this(action.node)
     constructor(action: TreeDelete): this(action.node)
 
-    override fun getName(): String = "com.paulpanther.actiondetector.actions.Remove"
+    override fun getName(): String = "Remove"
 
     companion object {
         fun from(action: Action): Remove = when(action) {
@@ -38,4 +38,17 @@ class Remove(node: Tree) : Action(node) {
     }
 }
 
-// TODO: Add cool aggregated actions like Move, Replace, Extract, etc.
+typealias TreeMove = com.github.gumtreediff.actions.model.Move
+class Move(node: Tree, parent: Tree, pos: Int) : Addition(node, parent, pos) {
+    constructor(action: TreeMove): this(action.node, action.parent, action.position)
+    override fun getName(): String = "Move"
+
+    companion object {
+        fun from(action: Action): Move = when(action) {
+            is TreeMove -> Move(action)
+            else -> throw IllegalStateException()
+        }
+    }
+}
+
+// TODO: Add cool aggregated actions like Replace, Extract, etc.

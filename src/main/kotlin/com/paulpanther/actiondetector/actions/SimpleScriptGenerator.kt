@@ -12,7 +12,7 @@ import com.github.gumtreediff.actions.model.TreeInsert
 import com.github.gumtreediff.matchers.MappingStore
 
 // TODO: Implement more advance aggregator which aggregates Add/com.paulpanther.actiondetector.actions.Remove actions
-//  to more advanced actions like Move, Replace, Extract, etc.
+//  to more advanced actions like Replace, Extract, etc.
 
 class SimpleScriptGenerator: EditScriptGenerator {
     override fun computeActions(mappings: MappingStore?): EditScript {
@@ -41,6 +41,7 @@ private fun classify(actions: EditScript): EditScript {
         when (action) {
             is Insert, is TreeInsert -> replace(action, Add.from(action))
             is Delete, is TreeDelete -> replace(action, Remove.from(action))
+            is TreeMove -> replace(action, Move.from(action))
         }
     }
 
