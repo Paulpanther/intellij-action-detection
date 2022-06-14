@@ -7,7 +7,7 @@ import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.dsl.builder.panel
-import displayName
+import com.paulpanther.actiondetector.actions.displayName
 import javax.swing.JPanel
 
 class ActionToolWindowFactory: ToolWindowFactory, DumbAware {

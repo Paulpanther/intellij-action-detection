@@ -1,3 +1,5 @@
+package com.paulpanther.actiondetector.actions
+
 import com.github.gumtreediff.actions.model.Action
 import com.github.gumtreediff.actions.model.Addition
 import com.github.gumtreediff.actions.model.Delete
@@ -25,7 +27,7 @@ class Remove(node: Tree) : Action(node) {
     constructor(action: Delete): this(action.node)
     constructor(action: TreeDelete): this(action.node)
 
-    override fun getName(): String = "Remove"
+    override fun getName(): String = "com.paulpanther.actiondetector.actions.Remove"
 
     companion object {
         fun from(action: Action): Remove = when(action) {

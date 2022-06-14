@@ -1,7 +1,5 @@
-package com.paulpanther.actiondetector
+package com.paulpanther.actiondetector.actions
 
-import Add
-import Remove
 import com.github.gumtreediff.actions.ChawatheScriptGenerator
 import com.github.gumtreediff.actions.EditScript
 import com.github.gumtreediff.actions.EditScriptGenerator
@@ -13,7 +11,7 @@ import com.github.gumtreediff.actions.model.TreeDelete
 import com.github.gumtreediff.actions.model.TreeInsert
 import com.github.gumtreediff.matchers.MappingStore
 
-// TODO: Implement more advance aggregator which aggregates Add/Remove actions
+// TODO: Implement more advance aggregator which aggregates Add/com.paulpanther.actiondetector.actions.Remove actions
 //  to more advanced actions like Move, Replace, Extract, etc.
 
 class SimpleScriptGenerator: EditScriptGenerator {

@@ -1,7 +1,6 @@
-package com.paulpanther.actiondetector
+package com.paulpanther.actiondetector.actions
 
 import com.github.gumtreediff.gen.treesitter.JavaTreeSitterTreeGenerator
-import com.github.gumtreediff.actions.SimplifiedChawatheScriptGenerator
 import com.github.gumtreediff.actions.model.Action
 import com.github.gumtreediff.matchers.Matchers
 import java.io.File

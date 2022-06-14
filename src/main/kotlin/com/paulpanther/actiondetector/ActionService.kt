@@ -5,6 +5,8 @@ import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import com.paulpanther.actiondetector.actions.ActionMiner
+import com.paulpanther.actiondetector.actions.FileSnapshotProvider
 
 typealias RefactoringListener = (refactorings: List<Action>) -> Unit
 
@@ -21,7 +23,6 @@ class ActionService(private val project: Project) {
     fun showRefactorings(file: VirtualFile) {
         val (original, snapshot) = FileSnapshotProvider.getSnapshot(project, file) ?: return
         val refactorings = miner.getRefactoring(original, snapshot)
-//        allRefactorings += refactorings
         listeners.forEach { it(refactorings) }
     }
 
