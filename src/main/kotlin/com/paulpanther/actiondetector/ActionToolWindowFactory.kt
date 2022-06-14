@@ -17,6 +17,7 @@ class ActionToolWindowFactory: ToolWindowFactory, DumbAware {
         val manager = toolWindow.contentManager
         val content = manager.factory.createContent(actionToolWindow(), "", false)
         manager.addContent(content, -1)
+        // Does not work, shortcutSet.shortcuts is empty: buildPluginShortcutsHelp()
 
         project.actionService.addRefactoringListener {
             entriesPane.removeAll()
@@ -28,6 +29,15 @@ class ActionToolWindowFactory: ToolWindowFactory, DumbAware {
 
     private fun actionToolWindow() = JBScrollPane(entriesPane)
 
+    @Suppress("UnstableApiUsage")
+    private fun buildPluginShortcutsHelp() {
+        entriesPane.add(panel {
+            row {
+                label("${ShowRefactoringsAction().shortcutSet.shortcuts.firstOrNull()}")
+                label("${CreateSnapshotAction().shortcutSet.shortcuts.firstOrNull()}")
+            }
+        })
+    }
     @Suppress("UnstableApiUsage")
     private fun buildEntries(refactorings: List<Action>) {
         entriesPane.add(panel {
