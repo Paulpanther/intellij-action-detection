@@ -5,24 +5,23 @@ import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import com.paulpanther.actiondetector.actions.ActionMiner
-import com.paulpanther.actiondetector.actions.FileSnapshotProvider
+import com.paulpanther.actiondetector.actions.ActionLogGenerator
 
 typealias RefactoringListener = (refactorings: List<Action>) -> Unit
 
 @Service
 class ActionService(private val project: Project) {
     private val listeners = mutableListOf<RefactoringListener>()
-    private val allRefactorings = mutableListOf<Action>()
-    private val miner = ActionMiner()
+    private val generators = mutableMapOf<VirtualFile, ActionLogGenerator>()
 
     fun update(file: VirtualFile) {
-        FileSnapshotProvider.buildSnapshot(project, file)
+
     }
 
     fun showRefactorings(file: VirtualFile) {
-        val (original, snapshot) = FileSnapshotProvider.getSnapshot(project, file) ?: return
-        val refactorings = miner.getRefactoring(original, snapshot)
+        val refactorings = generators
+            .getOrPut(file) { ActionLogGenerator(project, file.toNioPath().toFile()) }
+            .update()
         listeners.forEach { it(refactorings) }
     }
 
