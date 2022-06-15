@@ -12,8 +12,9 @@ class ActionLogGenerator(
     private val snapshots = FileSnapshotProvider(project, file)
 
     private var lastNewActions = listOf<Action>()
-    private var lastSnap = snapshots.buildNextSnapshot()
     private val timeline = Timeline()
+    private var lastSnap = snapshots.buildNextSnapshot()
+        .also { timeline.add(it, mapOf()) }
     private var currentShortestPath = listOf<Action>()
 
     fun update(): List<Action> {
@@ -37,10 +38,10 @@ class ActionLogGenerator(
     }
 
     private fun findNewActions(): List<Action> {
-        return miner.getRefactoring(lastSnap.file, file)
+        return miner.getRefactoring(file, lastSnap.file)
     }
 
     private fun findActionsToAllPrevious(): Map<Snapshot, List<Action>> {
-        return snapshots.associateWith { miner.getRefactoring(it.file, file) }
+        return snapshots.associateWith { miner.getRefactoring(file, it.file) }
     }
 }

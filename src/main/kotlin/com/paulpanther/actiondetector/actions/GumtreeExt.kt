@@ -10,7 +10,7 @@ private val Tree.displayName: String get() = toString()
     .replace("_", " ")
 
 fun Action.similarTo(other: Action): Boolean {
-    TODO()
+    return this::class == other::class
 }
 
 fun List<Action>.similarTo(other: List<Action>): Boolean {

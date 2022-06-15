@@ -11,7 +11,8 @@ class Timeline {
     fun add(newSnap: Snapshot, newDiff: Map<Snapshot, List<Action>>) {
         graph[newSnap] = Edges(
             incoming = newDiff.map { (snapshot, actions) ->
-                TimelineEdge(origin = snapshot, destination = newSnap, actions).also { graph.getValue(snapshot).outgoing.add(it) }
+                TimelineEdge(origin = snapshot, destination = newSnap, actions)
+                    .also { graph.getValue(snapshot).outgoing.add(it) }
             }.toMutableList(),
             outgoing = mutableListOf())
 
