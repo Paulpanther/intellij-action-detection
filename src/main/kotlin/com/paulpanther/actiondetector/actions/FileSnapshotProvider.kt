@@ -18,6 +18,8 @@ class FileSnapshotProvider(
 
     private var lastId = -1
 
+    val root get() = snapshots.first()
+
     fun buildNextSnapshot(): Snapshot {
         buildSnapshot(++lastId)
         return (getSnapshot(lastId) ?: error("Could not create File"))

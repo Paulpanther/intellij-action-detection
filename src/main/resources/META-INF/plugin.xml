@@ -5,6 +5,7 @@
     <vendor>paulpanther</vendor>
 
     <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <projectService
@@ -13,6 +14,9 @@
                 factoryClass="com.paulpanther.actiondetector.ActionToolWindowFactory"
                 id="Detected Actions"
                 anchor="right"/>
+        <annotator
+            implementationClass="com.paulpanther.actiondetector.ActionAnnotator"
+            language="JAVA" />
     </extensions>
 
     <applicationListeners>

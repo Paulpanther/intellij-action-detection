@@ -2,6 +2,7 @@ package com.paulpanther.actiondetector.actions
 
 import com.github.gumtreediff.actions.model.Action
 import com.github.gumtreediff.tree.Tree
+import com.intellij.openapi.util.TextRange
 
 val Action.displayName: String get() = "$name ${node.displayName}"
 
@@ -10,9 +11,11 @@ private val Tree.displayName: String get() = toString()
     .replace("_", " ")
 
 fun Action.similarTo(other: Action): Boolean {
-    return this::class == other::class
+    return this::class == other::class && node.type == other.node.type
 }
 
 fun List<Action>.similarTo(other: List<Action>): Boolean {
-    return zip(other).all { (a1, a2) -> a1.similarTo(a2) }
+    return size == other.size && zip(other).all { (a1, a2) -> a1.similarTo(a2) }
 }
+
+val Tree.range get() = TextRange(pos, endPos)
