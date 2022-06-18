@@ -3,6 +3,7 @@ package com.paulpanther.actiondetector.actions
 import com.github.gumtreediff.actions.model.Action
 import com.github.gumtreediff.tree.Tree
 import com.intellij.openapi.util.TextRange
+import java.io.File
 
 val Action.displayName: String get() = "$name ${node.displayName}"
 
@@ -19,3 +20,7 @@ fun List<Action>.similarTo(other: List<Action>): Boolean {
 }
 
 val Tree.range get() = TextRange(pos, endPos)
+
+fun Tree.text(file: File) = file.readText().substring(range)
+
+fun String.substring(range: TextRange) = range.substring(this)

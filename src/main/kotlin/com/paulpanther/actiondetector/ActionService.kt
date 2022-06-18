@@ -1,5 +1,6 @@
 package com.paulpanther.actiondetector
 
+import com.github.gumtreediff.actions.model.Action
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
@@ -8,16 +9,33 @@ import com.intellij.util.FileContentUtil
 import com.paulpanther.actiondetector.actions.ActionLogGenerator
 import com.paulpanther.actiondetector.actions.ActionWithFile
 
-typealias RefactoringListener = (refactorings: List<ActionWithFile>) -> Unit
+typealias RefactoringListener = (refactorings: List<Action>) -> Unit
 
 @Service
 class ActionService(private val project: Project) {
     private val listeners = mutableListOf<RefactoringListener>()
     private val generators = mutableMapOf<VirtualFile, ActionLogGenerator>()
-    val annotations = mutableMapOf<VirtualFile, List<ActionAnnotation>>()
+    val annotations = mutableMapOf<VirtualFile, List<ActionAnnotation<*>>>()
 
     fun update(file: VirtualFile) {
 
+    }
+
+    fun show(action: Action) {
+        for ((file, annotations) in annotations) {
+            val clickedAnnotation = annotations.find { it.action == action }
+            if (clickedAnnotation != null) {
+
+                if (!clickedAnnotation.visible) {
+                    annotations.forEach { it.visible = false }
+                }
+
+                clickedAnnotation.visible = !clickedAnnotation.visible
+
+                FileContentUtil.reparseFiles(project, listOf(file), true)
+                break
+            }
+        }
     }
 
     fun showRefactorings(file: VirtualFile) {
@@ -26,7 +44,7 @@ class ActionService(private val project: Project) {
 
         if (gen.update()) {
             listeners.forEach { it(gen.currentShortestPath) }
-            annotations[file] = ActionToPsiMapper.generateAnnotations(gen.currentShortestPath)
+            annotations[file] = ActionAnnotation.from(gen.currentShortestPath)
             FileContentUtil.reparseFiles(project, listOf(file), true)
         }
     }

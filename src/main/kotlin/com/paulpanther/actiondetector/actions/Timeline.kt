@@ -20,7 +20,7 @@ class Timeline {
         last = newSnap
     }
 
-    fun findShortestPath(): List<ActionWithFile> {
+    fun findShortestPath(): List<Action> {
         val first: Snapshot = this.first ?: return listOf()
         val last: Snapshot = this.last ?: return listOf()
 
@@ -57,7 +57,7 @@ class Timeline {
 
         return path
             .reversed()
-            .flatMap { it.actions.map { a -> ActionWithFile(a, it.origin.file, it.destination.file) } }
+            .flatMap { it.actions }
     }
 }
 

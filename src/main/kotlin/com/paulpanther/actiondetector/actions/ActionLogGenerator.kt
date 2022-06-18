@@ -2,9 +2,6 @@ package com.paulpanther.actiondetector.actions
 
 import com.github.gumtreediff.actions.model.Action
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
-import com.paulpanther.actiondetector.ActionAnnotation
-import com.paulpanther.actiondetector.ActionToPsiMapper
 import java.io.File
 
 data class ActionWithFile(
@@ -23,7 +20,7 @@ class ActionLogGenerator(
     private var lastNewActions = listOf<Action>()
 
     private val timeline = Timeline()
-    var currentShortestPath = listOf<ActionWithFile>()
+    var currentShortestPath = listOf<Action>()
         private set
 
     init {

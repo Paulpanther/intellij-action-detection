@@ -1,5 +1,6 @@
 package com.paulpanther.actiondetector
 
+import com.github.gumtreediff.actions.model.Action
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
@@ -21,7 +22,7 @@ class ActionToolWindowFactory: ToolWindowFactory, DumbAware {
 
         project.actionService.addRefactoringListener {
             entriesPane.removeAll()
-            buildEntries(it)
+            buildEntries(project, it)
             entriesPane.validate()
             entriesPane.repaint()
         }
@@ -39,11 +40,13 @@ class ActionToolWindowFactory: ToolWindowFactory, DumbAware {
         })
     }
     @Suppress("UnstableApiUsage")
-    private fun buildEntries(refactorings: List<ActionWithFile>) {
+    private fun buildEntries(project: Project, refactorings: List<Action>) {
         entriesPane.add(panel {
             for (ref in refactorings) {
                 row {
-                    label(ref.action.displayName)
+                    button(ref.displayName) {
+                        project.actionService.show(ref)
+                    }
                 }
             }
         })
