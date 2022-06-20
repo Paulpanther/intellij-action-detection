@@ -2,6 +2,7 @@ package com.paulpanther.actiondetector.actions
 
 import com.github.gumtreediff.gen.treesitter.JavaTreeSitterTreeGenerator
 import com.github.gumtreediff.actions.model.Action
+import com.github.gumtreediff.gen.SyntaxException
 import com.github.gumtreediff.matchers.Matchers
 import java.io.File
 
@@ -17,14 +18,17 @@ class ActionMiner {
         treeGenerator = JavaTreeSitterTreeGenerator()
     }
 
-    fun getRefactoring(original: File, snap: File): List<Action> {
-        val originalRoot = treeGenerator.generateFrom().file(original.absoluteFile).root
-        val snapshotRoot = treeGenerator.generateFrom().file(snap.absoluteFile).root
+    fun getRefactoring(original: File, snap: File): List<Action>? {
+        return try {
+            val originalRoot =
+                treeGenerator.generateFrom().file(original.absoluteFile).root
+            val snapshotRoot =
+                treeGenerator.generateFrom().file(snap.absoluteFile).root
 
-//        val c1 = File(f1).readText()
-//        val c2 = File(f2).readText()
-
-        val mappings = matcher.match(snapshotRoot, originalRoot)
-        return editGenerator.computeActions(mappings).asList()
+            val mappings = matcher.match(snapshotRoot, originalRoot)
+            editGenerator.computeActions(mappings).asList()
+        } catch (e: SyntaxException) {
+            null
+        }
     }
 }

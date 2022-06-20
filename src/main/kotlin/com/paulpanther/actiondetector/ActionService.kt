@@ -8,6 +8,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.FileContentUtil
 import com.paulpanther.actiondetector.actions.ActionLogGenerator
 import com.paulpanther.actiondetector.actions.ActionWithFile
+import com.paulpanther.actiondetector.actions.FileSnapshotProvider
 
 typealias RefactoringListener = (refactorings: List<Action>) -> Unit
 
@@ -17,8 +18,13 @@ class ActionService(private val project: Project) {
     private val generators = mutableMapOf<VirtualFile, ActionLogGenerator>()
     val annotations = mutableMapOf<VirtualFile, List<ActionAnnotation<*>>>()
 
-    fun update(file: VirtualFile) {
+    init {
+        FileUpdateListener.init(project)
+    }
 
+    fun update(file: VirtualFile) {
+        // TODO refactor into showRefactorings
+        showRefactorings(file)
     }
 
     fun show(action: Action) {
@@ -39,8 +45,10 @@ class ActionService(private val project: Project) {
     }
 
     fun showRefactorings(file: VirtualFile) {
+        if (FileSnapshotProvider.isSnapshotFile(file)) return
+
         val gen = generators
-            .getOrPut(file) { ActionLogGenerator(project, file.toNioPath().toFile()) }
+            .getOrPut(file) { ActionLogGenerator(project, file) }
 
         if (gen.update()) {
             listeners.forEach { it(gen.currentShortestPath) }

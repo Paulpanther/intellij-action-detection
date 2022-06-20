@@ -2,6 +2,7 @@ package com.paulpanther.actiondetector.actions
 
 import com.github.gumtreediff.actions.model.Action
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
 import java.io.File
 
 data class ActionWithFile(
@@ -11,11 +12,11 @@ data class ActionWithFile(
 )
 
 class ActionLogGenerator(
-    private val project: Project,
-    private val file: File
+    project: Project,
+    virtualFile: VirtualFile
 ) {
     private val miner = ActionMiner()
-    private val snapshots = FileSnapshotProvider(project, file)
+    private val snapshots = FileSnapshotProvider(project, virtualFile)
 
     private var lastNewActions = listOf<Action>()
 
@@ -35,13 +36,15 @@ class ActionLogGenerator(
         // store actions of each pair
         // find the new shortest path
 
-        val newActions = findNewActions()
+        val newActions = findNewActions() ?: return false
         if (!newActions.similarTo(lastNewActions)) {
-            val actionsPerSnap = findActionsToAllPrevious()
+            val actionsPerSnap = findActionsToAllPrevious() ?: return false
             val next = snapshots.buildNextSnapshot()
 
             timeline.add(next, actionsPerSnap)
             currentShortestPath = timeline.findShortestPath()
+            lastNewActions = newActions
+
             return true
         }
         lastNewActions = newActions
@@ -49,11 +52,13 @@ class ActionLogGenerator(
         return false
     }
 
-    private fun findNewActions(): List<Action> {
+    private fun findNewActions(): List<Action>? {
+        val file = snapshots.updateLatestFile() ?: return listOf()
         return miner.getRefactoring(file, snapshots.root.file)
     }
 
-    private fun findActionsToAllPrevious(): Map<Snapshot, List<Action>> {
-        return snapshots.associateWith { miner.getRefactoring(file, it.file) }
+    private fun findActionsToAllPrevious(): Map<Snapshot, List<Action>>? {
+        val file = snapshots.updateLatestFile() ?: return mapOf()
+        return snapshots.associateWith { miner.getRefactoring(file, it.file) ?: return null }
     }
 }
