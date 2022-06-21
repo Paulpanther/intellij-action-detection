@@ -45,8 +45,6 @@ class ActionService(private val project: Project) {
     }
 
     fun showRefactorings(file: VirtualFile) {
-        if (FileSnapshotProvider.isSnapshotFile(file)) return
-
         val gen = generators
             .getOrPut(file) { ActionLogGenerator(project, file) }
 

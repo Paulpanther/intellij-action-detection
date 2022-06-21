@@ -3,6 +3,7 @@ package com.paulpanther.actiondetector.actions
 import com.github.gumtreediff.actions.model.Action
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import com.paulpanther.actiondetector.content
 import java.io.File
 
 data class ActionWithFile(
@@ -13,10 +14,10 @@ data class ActionWithFile(
 
 class ActionLogGenerator(
     project: Project,
-    virtualFile: VirtualFile
+    private val file: VirtualFile
 ) {
     private val miner = ActionMiner()
-    private val snapshots = FileSnapshotProvider(project, virtualFile)
+    private val snapshots = FileSnapshotProvider(file)
 
     private var lastNewActions = listOf<Action>()
 
@@ -53,12 +54,12 @@ class ActionLogGenerator(
     }
 
     private fun findNewActions(): List<Action>? {
-        val file = snapshots.updateLatestFile() ?: return listOf()
-        return miner.getRefactoring(file, snapshots.root.file)
+        val current = file.content ?: return null
+        return miner.getRefactoring(current, snapshots.root.content)
     }
 
     private fun findActionsToAllPrevious(): Map<Snapshot, List<Action>>? {
-        val file = snapshots.updateLatestFile() ?: return mapOf()
-        return snapshots.associateWith { miner.getRefactoring(file, it.file) ?: return null }
+        val current = file.content ?: return null
+        return snapshots.associateWith { miner.getRefactoring(current, it.content) ?: return null }
     }
 }
