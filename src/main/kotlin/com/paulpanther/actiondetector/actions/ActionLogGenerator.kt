@@ -22,6 +22,8 @@ class ActionLogGenerator(
     private var lastNewActions = listOf<Action>()
 
     private val timeline = Timeline()
+    val actionGraph
+        get() = timeline.actionGraph
     var currentShortestPath = listOf<Action>()
         private set
 

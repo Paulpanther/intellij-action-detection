@@ -7,10 +7,10 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.FileContentUtil
 import com.paulpanther.actiondetector.actions.ActionLogGenerator
-import com.paulpanther.actiondetector.actions.ActionWithFile
 import com.paulpanther.actiondetector.actions.FileSnapshotProvider
+import com.paulpanther.actiondetector.actions.Graph
 
-typealias RefactoringListener = (refactorings: List<Action>) -> Unit
+typealias RefactoringListener = (refactorings: List<Action>, graph: Graph) -> Unit
 
 @Service
 class ActionService(private val project: Project) {
@@ -49,10 +49,19 @@ class ActionService(private val project: Project) {
             .getOrPut(file) { ActionLogGenerator(project, file) }
 
         if (gen.update()) {
-            listeners.forEach { it(gen.currentShortestPath) }
+            listeners.forEach { it(gen.currentShortestPath, gen.actionGraph) }
             annotations[file] = ActionAnnotation.from(gen.currentShortestPath)
             FileContentUtil.reparseFiles(project, listOf(file), true)
         }
+    }
+
+    fun outputActionGraph(file: VirtualFile): Graph? {
+        if (FileSnapshotProvider.isSnapshotFile(file)) return null
+
+        val gen = generators
+            .getOrPut(file) { ActionLogGenerator(project, file) }
+
+        return gen.actionGraph
     }
 
     fun addRefactoringListener(listener: RefactoringListener) {
