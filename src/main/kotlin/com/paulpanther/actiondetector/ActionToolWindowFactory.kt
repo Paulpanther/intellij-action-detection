@@ -7,7 +7,8 @@ import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.dsl.builder.panel
-import com.paulpanther.actiondetector.actions.ActionWithFile
+import com.paulpanther.actiondetector.actions.Graph
+import com.paulpanther.actiondetector.actions.convertToMermaidChart
 import com.paulpanther.actiondetector.actions.displayName
 import javax.swing.JPanel
 
@@ -20,9 +21,9 @@ class ActionToolWindowFactory: ToolWindowFactory, DumbAware {
         manager.addContent(content, -1)
         // Does not work, shortcutSet.shortcuts is empty: buildPluginShortcutsHelp()
 
-        project.actionService.addRefactoringListener {
+        project.actionService.addRefactoringListener { actions, _ ->
             entriesPane.removeAll()
-            buildEntries(project, it)
+            buildEntries(project, actions)
             entriesPane.validate()
             entriesPane.repaint()
         }
@@ -48,6 +49,15 @@ class ActionToolWindowFactory: ToolWindowFactory, DumbAware {
                         project.actionService.show(ref)
                     }
                 }
+            }
+        })
+    }
+
+    @Suppress("UnstableApiUsage")
+    private fun buildGraph(graph: Graph) {
+        entriesPane.add(panel {
+            row {
+                label(graph.convertToMermaidChart())
             }
         })
     }
