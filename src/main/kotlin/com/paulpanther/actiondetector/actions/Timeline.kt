@@ -4,12 +4,15 @@ import com.github.gumtreediff.actions.model.Action
 
 class Timeline {
     // Edges are oriented from oldest to newest snapshot
-    private val graph: MutableMap<Snapshot, Edges> = mutableMapOf()
+    private val graph: MutableGraph = mutableMapOf()
     private var first: Snapshot? = null
     private var last: Snapshot? = null
 
+    val actionGraph: Graph
+        get() = graph
+
     fun add(newSnap: Snapshot, newDiff: Map<Snapshot, List<Action>>) {
-        graph[newSnap] = Edges(
+        graph[newSnap] = MutableEdges(
             incoming = newDiff.map { (snapshot, actions) ->
                 TimelineEdge(origin = snapshot, destination = newSnap, actions)
                     .also { graph.getValue(snapshot).outgoing.add(it) }
@@ -61,12 +64,20 @@ class Timeline {
     }
 }
 
+typealias Graph = Map<Snapshot, Edges>
 
-private data class Edges(
-    val incoming: MutableList<TimelineEdge>,
-    val outgoing: MutableList<TimelineEdge>
-)
-private data class TimelineEdge(
+private typealias MutableGraph = MutableMap<Snapshot, MutableEdges>
+
+interface Edges {
+    val incoming: List<TimelineEdge>
+    val outgoing: List<TimelineEdge>
+}
+
+private data class MutableEdges(
+    override val incoming: MutableList<TimelineEdge>,
+    override val outgoing: MutableList<TimelineEdge>
+): Edges
+data class TimelineEdge(
     val origin: Snapshot,
     val destination: Snapshot,
     val actions: List<Action>
