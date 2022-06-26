@@ -26,7 +26,7 @@ class ActionMiner {
                 treeGenerator.generateFrom().string(snap).root
 
             val mappings = matcher.match(snapshotRoot, originalRoot)
-            editGenerator.computeActions(mappings).asList()
+            editGenerator.computeActions(mappings, original, snap).asList()
         } catch (e: SyntaxException) {
             null
         }
