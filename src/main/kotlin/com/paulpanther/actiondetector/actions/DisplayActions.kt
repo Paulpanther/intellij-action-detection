@@ -8,7 +8,17 @@ import com.github.gumtreediff.actions.model.TreeDelete
 import com.github.gumtreediff.actions.model.TreeInsert
 import com.github.gumtreediff.tree.Tree
 
-class Add(node: Tree, parent: Tree, pos: Int) : Addition(node, parent, pos) {
+data class ActionDetail(
+    val label: String?,
+    val code: String,
+)
+
+sealed interface DisplayAction {
+    val title: String
+    val details: List<ActionDetail>
+}
+
+class Add(node: Tree, parent: Tree, pos: Int) : Addition(node, parent, pos), DisplayAction {
     constructor(action: Insert): this(action.node, action.parent, action.position)
     constructor(action: TreeInsert): this(action.node, action.parent, action.position)
 
@@ -22,10 +32,13 @@ class Add(node: Tree, parent: Tree, pos: Int) : Addition(node, parent, pos) {
         }
     }
 
-    // TODO: Antonius: Interface for display friendly aggregated info
+    override val title: String
+        get() = name
+    override val details: List<ActionDetail>
+        get() = TODO("Not yet implemented")
 }
 
-class Remove(node: Tree) : Action(node) {
+class Remove(node: Tree) : Action(node), DisplayAction {
     constructor(action: Delete): this(action.node)
     constructor(action: TreeDelete): this(action.node)
 
@@ -38,10 +51,15 @@ class Remove(node: Tree) : Action(node) {
             else -> throw IllegalStateException()
         }
     }
+
+    override val title: String
+        get() = name
+    override val details: List<ActionDetail>
+        get() = TODO("Not yet implemented")
 }
 
 typealias TreeMove = com.github.gumtreediff.actions.model.Move
-class Move(node: Tree, parent: Tree, pos: Int) : Addition(node, parent, pos) {
+class Move(node: Tree, parent: Tree, pos: Int) : Addition(node, parent, pos), DisplayAction {
     constructor(action: TreeMove): this(action.node, action.parent, action.position)
     override fun getName(): String = "Move"
 
@@ -51,6 +69,11 @@ class Move(node: Tree, parent: Tree, pos: Int) : Addition(node, parent, pos) {
             else -> throw IllegalStateException()
         }
     }
+
+    override val title: String
+        get() = name
+    override val details: List<ActionDetail>
+        get() = TODO("Not yet implemented")
 }
 
 // TODO: Add cool aggregated actions like Replace, Extract, etc.
