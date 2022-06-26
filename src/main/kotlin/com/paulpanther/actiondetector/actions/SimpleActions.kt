@@ -21,6 +21,8 @@ class Add(node: Tree, parent: Tree, pos: Int) : Addition(node, parent, pos) {
             else -> throw IllegalStateException()
         }
     }
+
+    // TODO: Antonius: Interface for display friendly aggregated info
 }
 
 class Remove(node: Tree) : Action(node) {
