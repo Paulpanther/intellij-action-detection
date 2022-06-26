@@ -14,7 +14,7 @@ import com.github.gumtreediff.matchers.MappingStore
 // TODO: Implement more advance aggregator which aggregates Add/com.paulpanther.actiondetector.actions.Remove actions
 //  to more advanced actions like Replace, Extract, etc.
 
-class SimpleScriptGenerator: EditScriptGenerator {
+class DisplayActionsGenerator: EditScriptGenerator {
     override fun computeActions(mappings: MappingStore?): EditScript {
         val actions = SimplifiedChawatheScriptGenerator().computeActions(mappings)
         return classify(actions)
