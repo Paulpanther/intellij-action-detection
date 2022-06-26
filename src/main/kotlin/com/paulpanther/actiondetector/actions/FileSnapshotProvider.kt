@@ -7,7 +7,9 @@ import com.paulpanther.actiondetector.content
 import java.io.File
 import java.nio.file.Path
 
-data class Snapshot(val content: String)
+data class Snapshot(
+    val id: Int,
+    val content: String)
 
 class FileSnapshotProvider(
     private val file: VirtualFile,
@@ -16,9 +18,11 @@ class FileSnapshotProvider(
 
     val root get() = snapshots.first()
 
+    var lastId = 0
+
     fun buildNextSnapshot(): Snapshot {
         val content = file.content ?: error("Could not get latest text")
-        return Snapshot(content)
+        return Snapshot(lastId++, content)
             .also {
                 snapshots += it
             }

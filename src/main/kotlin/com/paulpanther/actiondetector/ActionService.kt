@@ -1,11 +1,13 @@
 package com.paulpanther.actiondetector
 
 import com.github.gumtreediff.actions.model.Action
+import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.FileContentUtil
+import com.intellij.util.application
 import com.paulpanther.actiondetector.actions.ActionLogGenerator
 import com.paulpanther.actiondetector.actions.FileSnapshotProvider
 import com.paulpanther.actiondetector.actions.Graph
@@ -23,8 +25,9 @@ class ActionService(private val project: Project) {
     }
 
     fun update(file: VirtualFile) {
-        // TODO refactor into showRefactorings
-        showRefactorings(file)
+        application.invokeLater {
+            showRefactorings(file)
+        }
     }
 
     fun show(action: Action) {
@@ -56,8 +59,6 @@ class ActionService(private val project: Project) {
     }
 
     fun outputActionGraph(file: VirtualFile): Graph? {
-        if (FileSnapshotProvider.isSnapshotFile(file)) return null
-
         val gen = generators
             .getOrPut(file) { ActionLogGenerator(project, file) }
 
