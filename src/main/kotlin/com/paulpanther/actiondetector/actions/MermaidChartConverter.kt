@@ -3,7 +3,7 @@ package com.paulpanther.actiondetector.actions
 fun Graph.convertToMermaidChart(): String {
     return "flowchart TB\n" + flatMap { (_, edges) ->
         edges.outgoing.map { edge ->
-            "\t${edge.origin.id}-- ${edge.actions.map { it.displayName }.concat(", ")} -->${edge.destination.id}\n"
+            "\t${edge.origin.id}-- ${edge.actions.size} -->${edge.destination.id}\n"
         }
     }.concat()
 }

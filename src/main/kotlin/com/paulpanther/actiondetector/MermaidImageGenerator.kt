@@ -8,14 +8,11 @@ fun Graph.generateMermaidImage(directory: File) {
     val file = File(directory, "mermaid.mmd")
     val mermaid = convertToMermaidChart()
 
+    directory.mkdirs()
     file.createNewFile()
-    file.writeText(mermaid.toString())
+    file.writeText(mermaid)
 
-    Runtime.getRuntime().exec("""
-cat << EOF  | mmdc -o action_graph.png
-    ${mermaid}
-EOF
-    """)
+    Runtime.getRuntime().exec("mmdc", arrayOf("-i", ".mermaid/mermaid.mmd", "-o", "action_graph.png"))
 }
 
 private fun getMermaidFile(directory: File) = File(directory, "mermaid.mmd")

@@ -14,10 +14,15 @@ import com.github.gumtreediff.matchers.MappingStore
 // TODO: Implement more advance aggregator which aggregates Add/com.paulpanther.actiondetector.actions.Remove actions
 //  to more advanced actions like Replace, Extract, etc.
 
-class SimpleScriptGenerator: EditScriptGenerator {
+class DisplayActionsGenerator: EditScriptGenerator {
     override fun computeActions(mappings: MappingStore?): EditScript {
         val actions = SimplifiedChawatheScriptGenerator().computeActions(mappings)
         return classify(actions)
+    }
+
+    fun computeActions(mappings: MappingStore?, current: String, previous: String): EditScript {
+        val actions = SimplifiedChawatheScriptGenerator().computeActions(mappings)
+        return classify(actions, current, previous)
     }
 }
 
@@ -28,7 +33,7 @@ class GranularScriptGenerator: EditScriptGenerator {
     }
 }
 
-private fun classify(actions: EditScript): EditScript {
+private fun classify(actions: EditScript, current: String? = null, previous: String? = null): EditScript {
     val removed = mutableListOf<Action>()
     val added = mutableListOf<Action>()
 
@@ -39,8 +44,8 @@ private fun classify(actions: EditScript): EditScript {
 
     for (action in actions) {
         when (action) {
-            is Insert, is TreeInsert -> replace(action, Add.from(action))
-            is Delete, is TreeDelete -> replace(action, Remove.from(action))
+            is Insert, is TreeInsert -> replace(action, Add.from(action, current))
+            is Delete, is TreeDelete -> replace(action, Remove.from(action, previous))
             is TreeMove -> replace(action, Move.from(action))
         }
     }
