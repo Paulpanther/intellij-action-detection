@@ -22,8 +22,8 @@ class ActionLogGenerator(
     private var lastNewActions = listOf<Action>()
 
     private val timeline = Timeline()
-    val actionGraph
-        get() = timeline.actionGraph
+    val actionGraph by timeline::actionGraph
+
     var currentShortestPath = listOf<Action>()
         private set
 
@@ -53,6 +53,15 @@ class ActionLogGenerator(
         lastNewActions = newActions
 
         return false
+    }
+
+    fun clear() {
+        lastNewActions = listOf()
+        timeline.clear()
+        currentShortestPath = listOf()
+        snapshots.clear()
+
+        timeline.add(snapshots.root, mapOf())
     }
 
     private fun findNewActions(): List<Action>? {

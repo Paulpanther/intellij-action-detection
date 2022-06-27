@@ -4,6 +4,7 @@ import com.github.gumtreediff.actions.model.Action
 import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
+import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.FileContentUtil
@@ -30,35 +31,33 @@ class ActionService(private val project: Project) {
         }
     }
 
-    fun show(action: Action) {
-        for ((file, annotations) in annotations) {
-            val clickedAnnotation = annotations.find { it.action == action }
-            if (clickedAnnotation != null) {
+    fun clear(file: VirtualFile? = project.openFile) {
+        file ?: return
 
-                if (!clickedAnnotation.visible) {
-                    annotations.forEach { it.visible = false }
-                }
-
-                clickedAnnotation.visible = !clickedAnnotation.visible
-
-                FileContentUtil.reparseFiles(project, listOf(file), true)
-                break
-            }
+        generators[file]?.let { log ->
+            log.clear()
+            updateUi(file, log)
         }
     }
 
-    fun showRefactorings(file: VirtualFile) {
+    private fun showRefactorings(file: VirtualFile) {
         val gen = generators
             .getOrPut(file) { ActionLogGenerator(project, file) }
 
         if (gen.update()) {
-            listeners.forEach { it(gen.currentShortestPath, gen.actionGraph) }
-            annotations[file] = ActionAnnotation.from(gen.currentShortestPath)
-            FileContentUtil.reparseFiles(project, listOf(file), true)
+            updateUi(file, gen)
         }
     }
 
-    fun outputActionGraph(file: VirtualFile): Graph? {
+    private fun updateUi(file: VirtualFile, gen: ActionLogGenerator) {
+        listeners.forEach { it(gen.currentShortestPath, gen.actionGraph) }
+        annotations[file] = ActionAnnotation.from(gen.currentShortestPath)
+        FileContentUtil.reparseFiles(project, listOf(file), true)
+    }
+
+    fun outputActionGraph(file: VirtualFile? = project.openFile): Graph? {
+        file ?: return null
+
         val gen = generators
             .getOrPut(file) { ActionLogGenerator(project, file) }
 

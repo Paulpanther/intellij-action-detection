@@ -11,7 +11,7 @@
         <projectService
                 serviceImplementation="com.paulpanther.actiondetector.ActionService"/>
         <toolWindow
-                factoryClass="com.paulpanther.actiondetector.ActionToolWindowFactory"
+                factoryClass="com.paulpanther.actiondetector.ui.ActionToolWindowFactory"
                 id="Detected Actions"
                 anchor="right"/>
         <annotator

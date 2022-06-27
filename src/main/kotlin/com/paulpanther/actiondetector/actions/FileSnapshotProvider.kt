@@ -27,4 +27,10 @@ class FileSnapshotProvider(
                 snapshots += it
             }
     }
+
+    fun clear() {
+        lastId = 0
+        snapshots.clear()
+        buildNextSnapshot()
+    }
 }

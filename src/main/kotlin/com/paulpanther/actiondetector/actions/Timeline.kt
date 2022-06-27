@@ -8,8 +8,7 @@ class Timeline {
     private var first: Snapshot? = null
     private var last: Snapshot? = null
 
-    val actionGraph: Graph
-        get() = graph
+    val actionGraph: Graph by ::graph
 
     fun add(newSnap: Snapshot, newDiff: Map<Snapshot, List<Action>>) {
         graph[newSnap] = MutableEdges(
@@ -21,6 +20,12 @@ class Timeline {
 
         first = first ?: newSnap
         last = newSnap
+    }
+
+    fun clear() {
+        graph.clear()
+        first = null
+        last = null
     }
 
     fun findShortestPath(): List<Action> {
