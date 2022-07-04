@@ -12,6 +12,7 @@ import com.intellij.ui.dsl.builder.Panel
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.layout.cellPanel
 import com.paulpanther.actiondetector.actionService
+import com.paulpanther.actiondetector.actions.ActionGroup
 import com.paulpanther.actiondetector.actions.DisplayAction
 import com.paulpanther.actiondetector.actions.displayName
 import java.awt.BorderLayout
@@ -57,37 +58,29 @@ class ActionToolWindow(private val project: Project) {
     }
 
     @Suppress("UnstableApiUsage")
-    private fun buildEntries(actions: List<Action>) {
+    private fun buildEntries(actions: List<ActionGroup>) {
         actionsPanel?.add(panel {
             @Suppress("UnstableApiUsage")
-            for (action in actions) {
+            for (group in actions) {
                 row {
-                    if (action is DisplayAction) {
-//                        panel {
-//                            collapsibleGroup(action.title) {
-//                                buildDetails(this, action)
-//                            }
-//                        }
-                        label(action.title)
-                    } else {
-                        label(action.displayName)
+                    panel {
+                        collapsibleGroup(group.title) {
+                            buildDetails(this, group)
+                        }
                     }
                 }
             }
         }, BorderLayout.NORTH)
     }
 
-//    @Suppress("UnstableApiUsage")
-//    private fun buildDetails(p: Panel, action: DisplayAction) {
-//        for (detail in action.details) {
-//            p.row {
-//                detail.label?.let {
-//                    label(it)
-//                }
-//                label(detail.code)
-//            }
-//        }
-//    }
+    @Suppress("UnstableApiUsage")
+    private fun buildDetails(p: Panel, group: ActionGroup) {
+        for (action in group.actions) {
+            p.row {
+                label((action as DisplayAction).title)
+            }
+        }
+    }
 
     private fun highlightCode(code: String): JPanel {
         val fragment = JavaCodeFragmentFactory.getInstance(project).createExpressionCodeFragment(code, null, null, true)

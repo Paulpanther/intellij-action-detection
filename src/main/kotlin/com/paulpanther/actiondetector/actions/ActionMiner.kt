@@ -5,7 +5,7 @@ import com.github.gumtreediff.actions.model.Action
 import com.github.gumtreediff.gen.SyntaxException
 import com.github.gumtreediff.matchers.Matchers
 
-class ActionMiner(private val grouper: ActionGrouper = ClassContentActionGrouper()) {
+class ActionMiner {
     private val matcher = Matchers.getInstance().matcher
     private val editGenerator = DisplayActionsGenerator()
     private val treeGenerator: JavaTreeSitterTreeGenerator
@@ -16,10 +16,6 @@ class ActionMiner(private val grouper: ActionGrouper = ClassContentActionGrouper
 
         treeGenerator = JavaTreeSitterTreeGenerator()
     }
-
-    fun getRefactoringGroups(original: String, snap: String) =
-        getRefactoring(original, snap)?.let { grouper.groupActions(it) }
-
     fun getRefactoring(original: String, snap: String): List<Action>? {
         return try {
             val originalRoot =

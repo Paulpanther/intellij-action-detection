@@ -17,14 +17,15 @@ class ActionLogGenerator(
     private val file: VirtualFile
 ) {
     private val miner = ActionMiner()
-    private val snapshots = FileSnapshotProvider(file)
+    private val grouper: ActionGrouper = ClassContentActionGrouper()
 
+    private val snapshots = FileSnapshotProvider(file)
     private var lastNewActions = listOf<Action>()
 
     private val timeline = Timeline()
     val actionGraph by timeline::actionGraph
 
-    var currentShortestPath = listOf<Action>()
+    var currentShortestPath = listOf<ActionGroup>()
         private set
 
     init {
@@ -45,7 +46,7 @@ class ActionLogGenerator(
             val next = snapshots.buildNextSnapshot()
 
             timeline.add(next, actionsPerSnap)
-            currentShortestPath = timeline.findShortestPath()
+            currentShortestPath = grouper.groupActions(timeline.findShortestPath())
             lastNewActions = newActions
 
             return true
