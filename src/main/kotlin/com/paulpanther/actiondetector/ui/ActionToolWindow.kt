@@ -63,11 +63,12 @@ class ActionToolWindow(private val project: Project) {
             for (action in actions) {
                 row {
                     if (action is DisplayAction) {
-                        panel {
-                            collapsibleGroup(action.title) {
-                                buildDetails(this, action)
-                            }
-                        }
+//                        panel {
+//                            collapsibleGroup(action.title) {
+//                                buildDetails(this, action)
+//                            }
+//                        }
+                        label(action.title)
                     } else {
                         label(action.displayName)
                     }
@@ -76,17 +77,17 @@ class ActionToolWindow(private val project: Project) {
         }, BorderLayout.NORTH)
     }
 
-    @Suppress("UnstableApiUsage")
-    private fun buildDetails(p: Panel, action: DisplayAction) {
-        for (detail in action.details) {
-            p.row {
-                detail.label?.let {
-                    label(it)
-                }
-                label(detail.code)
-            }
-        }
-    }
+//    @Suppress("UnstableApiUsage")
+//    private fun buildDetails(p: Panel, action: DisplayAction) {
+//        for (detail in action.details) {
+//            p.row {
+//                detail.label?.let {
+//                    label(it)
+//                }
+//                label(detail.code)
+//            }
+//        }
+//    }
 
     private fun highlightCode(code: String): JPanel {
         val fragment = JavaCodeFragmentFactory.getInstance(project).createExpressionCodeFragment(code, null, null, true)

@@ -17,7 +17,8 @@ class ActionMiner(private val grouper: ActionGrouper = ClassContentActionGrouper
         treeGenerator = JavaTreeSitterTreeGenerator()
     }
 
-    fun getRefactoringGroups(original: String, snap: String) = getRefactoring(original, snap)?.let { grouper.groupActions(it) }
+    fun getRefactoringGroups(original: String, snap: String) =
+        getRefactoring(original, snap)?.let { grouper.groupActions(it) }
 
     fun getRefactoring(original: String, snap: String): List<Action>? {
         return try {

@@ -15,7 +15,6 @@ data class ActionDetail(
 
 sealed interface DisplayAction {
     val title: String
-    val details: List<ActionDetail>
 }
 
 class Add(node: Tree, parent: Tree, pos: Int, private val source: String? = null) : Addition(node, parent, pos), DisplayAction {
@@ -32,9 +31,7 @@ class Add(node: Tree, parent: Tree, pos: Int, private val source: String? = null
         }
     }
 
-    override val title by ::name
-    override val details: List<ActionDetail>
-        get() = source?.let { listOf(ActionDetail(source.substring(node.range))) } ?: listOf()
+    override val title = "Insert ${NodeLabel(node).serialize()}"
 }
 
 class Remove(node: Tree, private val source: String? = null) : Action(node), DisplayAction {
@@ -52,8 +49,6 @@ class Remove(node: Tree, private val source: String? = null) : Action(node), Dis
     }
 
     override val title by ::name
-    override val details: List<ActionDetail>
-        get() = source?.let { listOf(ActionDetail(source.substring(node.range))) } ?: listOf()
 }
 
 typealias TreeMove = com.github.gumtreediff.actions.model.Move
@@ -69,8 +64,6 @@ class Move(node: Tree, parent: Tree, pos: Int) : Addition(node, parent, pos), Di
     }
 
     override val title by ::name
-    override val details: List<ActionDetail>
-        get() = listOf()
 }
 
 // TODO: Add cool aggregated actions like Replace, Extract, etc.

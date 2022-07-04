@@ -24,3 +24,16 @@ val Tree.range get() = TextRange(pos, endPos)
 fun Tree.text(file: File) = file.readText().substring(range)
 
 fun String.substring(range: TextRange) = range.substring(this)
+
+fun Tree.findChildOfType(vararg types: String) = findChildOfType(types.map { it.toRegex() })
+
+fun Tree.findChildOfType(vararg types: Regex) = findChildOfType(types.toList())
+
+fun Tree.findChildOfType(types: List<Regex>): Tree? {
+    val next = children.find { it.type.name.matches(types.first()) }
+    return if (types.size == 1) {
+        next
+    } else {
+        next?.findChildOfType(types.slice(1 until types.size))
+    }
+}
