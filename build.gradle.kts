@@ -21,8 +21,8 @@ version = properties("pluginVersion")
 
 // Configure project's dependencies
 repositories {
-    mavenCentral()
     mavenLocal()
+    mavenCentral()
 }
 
 dependencies {
