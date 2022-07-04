@@ -1,34 +1,40 @@
 package com.paulpanther.actiondetector
 
-import com.intellij.codeInsight.editorActions.TypedHandlerDelegate
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.fileEditor.FileDocumentManager
+import com.intellij.openapi.editor.Document
+import com.intellij.openapi.editor.event.DocumentEvent
+import com.intellij.openapi.editor.event.DocumentListener
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.FileEditorManagerListener
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiFile
 
-class FileUpdateListener: TypedHandlerDelegate(), FileEditorManagerListener {
+class FileUpdateListener(
+    private val project: Project
+): FileEditorManagerListener, DocumentListener {
+
     companion object {
         fun init(project: Project) {
             project.messageBus
                 .connect()
-                .subscribe(FileEditorManagerListener.FILE_EDITOR_MANAGER, FileUpdateListener())
+                .subscribe(FileEditorManagerListener.FILE_EDITOR_MANAGER, FileUpdateListener(project))
         }
     }
 
-    override fun charTyped(
-        c: Char,
-        project: Project,
-        editor: Editor,
-        file: PsiFile
-    ): Result {
-        project.actionService.update(file.virtualFile)
-        return super.charTyped(c, project, editor, file)
+    private val documents = mutableListOf<Document>()
+
+    override fun documentChanged(event: DocumentEvent) {
+        val file = event.document.file ?: return
+        project.actionService.update(file)
     }
 
     override fun fileOpened(source: FileEditorManager, file: VirtualFile) {
         source.project.actionService.update(file)
+
+        file.document?.let {
+            if (it !in documents) {
+                it.addDocumentListener(this)
+                documents += it
+            }
+        }
     }
 }

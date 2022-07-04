@@ -17,8 +17,6 @@
         <annotator
             implementationClass="com.paulpanther.actiondetector.ActionAnnotator"
             language="JAVA" />
-        <typedHandler
-                implementation="com.paulpanther.actiondetector.FileUpdateListener" />
     </extensions>
 
     <applicationListeners>

@@ -66,6 +66,8 @@ class ActionToolWindow(private val project: Project) {
                     panel {
                         collapsibleGroup(group.title) {
                             buildDetails(this, group)
+                        }.apply {
+                            expanded = true
                         }
                     }
                 }
@@ -77,7 +79,8 @@ class ActionToolWindow(private val project: Project) {
     private fun buildDetails(p: Panel, group: ActionGroup) {
         for (action in group.actions) {
             p.row {
-                label((action as DisplayAction).title)
+                val name = if (action is DisplayAction) action.title else action.displayName
+                label(name)
             }
         }
     }
