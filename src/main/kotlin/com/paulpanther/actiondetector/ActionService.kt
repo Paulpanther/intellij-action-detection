@@ -20,7 +20,6 @@ typealias RefactoringListener = (refactorings: List<ActionGroup>, graph: Graph) 
 class ActionService(private val project: Project) {
     private val listeners = mutableListOf<RefactoringListener>()
     private val generators = mutableMapOf<VirtualFile, ActionLogGenerator>()
-    val annotations = mutableMapOf<VirtualFile, List<ActionAnnotation<*>>>()
 
     init {
         FileUpdateListener.init(project)

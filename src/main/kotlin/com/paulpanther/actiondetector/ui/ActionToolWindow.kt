@@ -79,15 +79,8 @@ class ActionToolWindow(private val project: Project) {
     private fun buildDetails(p: Panel, group: ActionGroup) {
         for (action in group.actions) {
             p.row {
-                val name = if (action is DisplayAction) action.title else action.displayName
-                label(name)
+                label(action.name)
             }
         }
-    }
-
-    private fun highlightCode(code: String): JPanel {
-        val fragment = JavaCodeFragmentFactory.getInstance(project).createExpressionCodeFragment(code, null, null, true)
-        val doc = PsiDocumentManager.getInstance(project).getDocument(fragment)
-        return EditorTextField(doc, project, JavaFileType.INSTANCE)
     }
 }

@@ -14,9 +14,6 @@
                 factoryClass="com.paulpanther.actiondetector.ui.ActionToolWindowFactory"
                 id="Detected Actions"
                 anchor="right"/>
-        <annotator
-            implementationClass="com.paulpanther.actiondetector.ActionAnnotator"
-            language="JAVA" />
     </extensions>
 
     <applicationListeners>

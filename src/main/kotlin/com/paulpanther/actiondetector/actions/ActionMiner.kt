@@ -1,8 +1,8 @@
 package com.paulpanther.actiondetector.actions
 
-import com.github.gumtreediff.gen.treesitter.JavaTreeSitterTreeGenerator
 import com.github.gumtreediff.actions.model.Action
 import com.github.gumtreediff.gen.SyntaxException
+import com.github.gumtreediff.gen.treesitter.JavaTreeSitterTreeGenerator
 import com.github.gumtreediff.matchers.Matchers
 
 class ActionMiner {
@@ -24,7 +24,7 @@ class ActionMiner {
                 treeGenerator.generateFrom().string(snap).root
 
             val mappings = matcher.match(snapshotRoot, originalRoot)
-            editGenerator.computeActions(mappings, original, snap).asList()
+            editGenerator.computeActions(mappings)
         } catch (e: SyntaxException) {
             null
         }
