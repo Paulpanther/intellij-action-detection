@@ -37,3 +37,16 @@ fun Tree.findChildOfType(types: List<Regex>): Tree? {
         next?.findChildOfType(types.slice(1 until types.size))
     }
 }
+
+tailrec fun Tree.findRecursiveParentOfType(type: String): Tree? {
+    return if (parent?.type?.name == type) {
+        parent
+    } else {
+        parent?.findRecursiveParentOfType(type)
+    }
+}
+
+fun Tree.findRecursiveChildrenOfType(type: String): List<Tree> {
+    val directChildsOfType = children.filter { it.type.name == type }
+    return directChildsOfType + children.flatMap { it.findRecursiveChildrenOfType(type) }
+}
