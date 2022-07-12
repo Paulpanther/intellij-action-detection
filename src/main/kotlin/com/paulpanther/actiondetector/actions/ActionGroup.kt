@@ -13,6 +13,8 @@ interface ActionGrouper {
     fun groupActions(actions: List<Action>): List<ActionGroup>
 }
 
+// TODO ues https://github.com/tree-sitter/tree-sitter-typescript/blob/master/queries/tags.scm
+// TODO https://github.com/tree-sitter/tree-sitter-javascript/blob/master/queries/locals.scm
 class ClassContentActionGrouper: ActionGrouper {
     override fun groupActions(actions: List<Action>): List<ActionGroup> {
         return actions

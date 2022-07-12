@@ -8,25 +8,19 @@ import com.github.gumtreediff.matchers.Matchers
 class ActionMiner {
     private val matcher = Matchers.getInstance().matcher
     private val editGenerator = DisplayActionsGenerator()
-    private val treeGenerator: JavaTreeSitterTreeGenerator
 
-    init {
-        val tS = System.getProperty("tree-sitter", "/home/paul/dev/uni/ts-edit-action-detector/tree-sitter-parser/tree-sitter-parser.py")
-        System.setProperty("gt.ts.path", tS)
+    fun getRefactoring(original: Snapshot, snap: Snapshot): List<Action>? {
+        var startTime = System.currentTimeMillis()
 
-        treeGenerator = JavaTreeSitterTreeGenerator()
-    }
-    fun getRefactoring(original: String, snap: String): List<Action>? {
-        return try {
-            val originalRoot =
-                treeGenerator.generateFrom().string(original).root
-            val snapshotRoot =
-                treeGenerator.generateFrom().string(snap).root
+        val mappings = matcher.match(snap.tree, original.tree)
 
-            val mappings = matcher.match(snapshotRoot, originalRoot)
-            editGenerator.computeActions(mappings)
-        } catch (e: SyntaxException) {
-            null
-        }
+        println("2: ${System.currentTimeMillis() - startTime} ms")
+        startTime = System.currentTimeMillis()
+
+        val res = editGenerator.computeActions(mappings)
+
+        println("3: ${System.currentTimeMillis() - startTime} ms")
+
+        return res
     }
 }

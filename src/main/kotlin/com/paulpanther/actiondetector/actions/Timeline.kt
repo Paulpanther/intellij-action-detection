@@ -28,6 +28,8 @@ class Timeline {
         last = null
     }
 
+    fun ready() = first != null
+
     fun findShortestPath(): List<Action> {
         val first: Snapshot = this.first ?: return listOf()
         val last: Snapshot = this.last ?: return listOf()

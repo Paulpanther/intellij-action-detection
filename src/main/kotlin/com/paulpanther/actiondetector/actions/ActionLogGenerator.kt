@@ -3,18 +3,10 @@ package com.paulpanther.actiondetector.actions
 import com.github.gumtreediff.actions.model.Action
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import com.paulpanther.actiondetector.content
-import java.io.File
-
-data class ActionWithFile(
-    val action: Action,
-    val from: File,
-    val to: File,
-)
 
 class ActionLogGenerator(
     project: Project,
-    private val file: VirtualFile
+    file: VirtualFile
 ) {
     private val miner = ActionMiner()
     private val grouper: ActionGrouper = ClassContentActionGrouper()
@@ -29,8 +21,10 @@ class ActionLogGenerator(
         private set
 
     init {
-        val root = snapshots.buildNextSnapshot()
-        timeline.add(root, mapOf())
+        snapshots.buildNextSnapshot()?.also { root ->
+            snapshots += root
+            timeline.add(root, mapOf())
+        }
     }
 
     fun update(): Boolean {
@@ -40,11 +34,14 @@ class ActionLogGenerator(
         // store actions of each pair
         // find the new shortest path
 
-        val newActions = findNewActions() ?: return false
-        if (!newActions.similarTo(lastNewActions)) {
-            val actionsPerSnap = findActionsToAllPrevious() ?: return false
-            val next = snapshots.buildNextSnapshot()
+        if (!timeline.ready()) return false
+        val next = snapshots.buildNextSnapshot() ?: return false
+        val newActions = findNewActions(next) ?: return false
 
+        if (!newActions.similarTo(lastNewActions)) {
+            val actionsPerSnap = findActionsToAllPrevious(next) ?: return false
+
+            snapshots += next
             timeline.add(next, actionsPerSnap)
             currentShortestPath = grouper.groupActions(timeline.findShortestPath())
             lastNewActions = newActions
@@ -62,16 +59,19 @@ class ActionLogGenerator(
         currentShortestPath = listOf()
         snapshots.clear()
 
-        timeline.add(snapshots.root, mapOf())
+        snapshots.root?.let {
+            timeline.add(it, mapOf())
+        }
     }
 
-    private fun findNewActions(): List<Action>? {
-        val current = file.content ?: return null
-        return miner.getRefactoring(current, snapshots.root.content)
+    private fun findNewActions(next: Snapshot): List<Action>? {
+        val root = snapshots.root ?: return null
+        return miner.getRefactoring(next, root)
     }
 
-    private fun findActionsToAllPrevious(): Map<Snapshot, List<Action>>? {
-        val current = file.content ?: return null
-        return snapshots.associateWith { miner.getRefactoring(current, it.content) ?: return null }
+    private fun findActionsToAllPrevious(next: Snapshot): Map<Snapshot, List<Action>>? {
+        return snapshots.associateWith {
+            miner.getRefactoring(next, it) ?: return null
+        }
     }
 }

@@ -1,36 +1,55 @@
 package com.paulpanther.actiondetector.actions
 
-import com.intellij.openapi.fileEditor.FileDocumentManager
-import com.intellij.openapi.project.Project
+import com.github.gumtreediff.gen.SyntaxException
+import com.github.gumtreediff.gen.treesitter.JavaTreeSitterTreeGenerator
+import com.github.gumtreediff.tree.Tree
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationType
+import com.intellij.notification.Notifications
 import com.intellij.openapi.vfs.VirtualFile
 import com.paulpanther.actiondetector.content
-import java.io.File
-import java.nio.file.Path
 
 data class Snapshot(
     val id: Int,
-    val content: String)
+    val content: String,
+    val tree: Tree
+)
 
 class FileSnapshotProvider(
     private val file: VirtualFile,
     private val snapshots: MutableList<Snapshot> = mutableListOf()
-): List<Snapshot> by snapshots {
+): MutableList<Snapshot> by snapshots {
 
-    val root get() = snapshots.first()
-
+    private val treeGenerator: JavaTreeSitterTreeGenerator
+    val root get() = snapshots.firstOrNull().also {
+        if (it == null) {
+            Notifications.Bus.notify(Notification("Error Report", "Could not create root Snapshot", "Please remove syntax errors and clear snapshots", NotificationType.ERROR))
+        }
+    }
     var lastId = 0
 
-    fun buildNextSnapshot(): Snapshot {
-        val content = file.content ?: error("Could not get latest text")
-        return Snapshot(lastId++, content)
-            .also {
-                snapshots += it
-            }
+    init {
+        val tS = System.getProperty("tree-sitter", "/home/paul/dev/uni/ts-edit-action-detector/tree-sitter-parser/tree-sitter-parser.py")
+        System.setProperty("gt.ts.path", tS)
+
+        treeGenerator = JavaTreeSitterTreeGenerator()
     }
 
-    fun clear() {
+    fun buildNextSnapshot(): Snapshot? {
+        val content = file.content ?: error("Could not get latest text")
+
+        return try {
+            val tree =
+                treeGenerator.generateFrom().string(content).root
+            Snapshot(lastId++, content, tree)
+        } catch (e: SyntaxException) {
+            null
+        }
+    }
+
+    override fun clear() {
         lastId = 0
         snapshots.clear()
-        buildNextSnapshot()
+        buildNextSnapshot()?.let { this += it }
     }
 }
