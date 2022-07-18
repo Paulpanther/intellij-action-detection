@@ -18,10 +18,10 @@ private data class MethodWithChanges(
     val node: Tree,
     val name: String)
 
-private typealias MethodGraph = Map<MethodWithChanges, List<MethodWithChanges>>
+private typealias MethodGraph = Map<MethodWithChanges, MutableList<MethodWithChanges>>
 
-class ConnectedChangesGrouper {
-    fun group(actions: List<Action>): List<ActionGroup> {
+object ConnectedChangesGrouper: ActionGrouper {
+    override fun groupActions(actions: List<Action>): List<ActionGroup> {
         val graph = buildMethodGraph(actions)
         val connections = findConnection(graph)
         return connections.map { connection ->
@@ -49,13 +49,13 @@ class ConnectedChangesGrouper {
     private fun bfs(graph: MethodGraph, visited: MutableMap<MethodWithChanges, Boolean>, root: MethodWithChanges): List<MethodWithChanges> {
         val q = LinkedList<MethodWithChanges>()
         q += root
-        val added = mutableListOf<MethodWithChanges>()
+        val added = mutableListOf(root)
 
         while (!q.isEmpty()) {
             val v = q.pop()!!
 
             graph[v]!!.forEach { u ->
-                if (visited[u]!!) {
+                if (!visited[u]!!) {
                     visited[u] = true
                     added += u
                     q += u
@@ -69,9 +69,20 @@ class ConnectedChangesGrouper {
     private fun buildMethodGraph(actions: List<Action>): MethodGraph {
         val methods = findMethodsWithChanges(actions)
 
-        return methods.associateWith { method ->
-            val calls = findCallsInMethod(method.node)
-            calls.mapNotNull { call -> methods.find { it.name == call } }
+        val graph = methods.associateWith { method ->
+            findCallsInMethod(method.node)
+                .mapNotNull { call -> methods.find { it.name == call } }
+                .toMutableList()
+        }
+        addReturnEdges(graph)
+        return graph
+    }
+
+    private fun addReturnEdges(graph: MethodGraph) {
+        for ((from, edges) in graph) {
+            for (to in edges) {
+                graph[to]?.let { it += from }
+            }
         }
     }
 
@@ -89,7 +100,7 @@ class ConnectedChangesGrouper {
 
     private fun findCallsInMethod(method: Tree) =
         method
-            .findRecursiveChildrenOfType("method_call")
+            .findRecursiveChildrenOfType("method_invocation")
             .mapNotNull { identifierOfMethod(it) }
 
     private fun identifierOfMethod(method: Tree) = method.findChildOfType("identifier")?.label

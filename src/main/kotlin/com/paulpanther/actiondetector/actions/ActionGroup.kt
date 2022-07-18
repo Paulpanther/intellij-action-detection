@@ -13,16 +13,22 @@ class ActionLeafGroup(
 
 class ActionGroupGroup(
     title: String,
-    val group: List<ActionGroup>
+    val groups: List<ActionGroup>
 ): ActionGroup(title)
 
 interface ActionGrouper {
     fun groupActions(actions: List<Action>): List<ActionGroup>
 }
 
+object AllActionGroupers: ActionGrouper {
+    override fun groupActions(actions: List<Action>) =
+        ClassContentActionGrouper.groupActions(actions) +
+                ConnectedChangesGrouper.groupActions(actions)
+}
+
 // TODO ues https://github.com/tree-sitter/tree-sitter-typescript/blob/master/queries/tags.scm
 // TODO https://github.com/tree-sitter/tree-sitter-javascript/blob/master/queries/locals.scm
-class ClassContentActionGrouper: ActionGrouper {
+object ClassContentActionGrouper: ActionGrouper {
     override fun groupActions(actions: List<Action>): List<ActionGroup> {
         return actions
             .groupBy { action -> action.node.parents.findLast { it.isClassDeclaration() }?.className }

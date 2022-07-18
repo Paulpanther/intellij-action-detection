@@ -1,20 +1,14 @@
 package com.paulpanther.actiondetector.ui
 
 import com.github.gumtreediff.actions.model.Action
-import com.intellij.ide.highlighter.JavaFileType
 import com.intellij.openapi.project.Project
-import com.intellij.psi.JavaCodeFragmentFactory
-import com.intellij.psi.PsiDocumentManager
-import com.intellij.ui.EditorTextField
 import com.intellij.ui.components.JBScrollPane
-import com.intellij.ui.components.fields.ExpandableTextField
 import com.intellij.ui.dsl.builder.Panel
 import com.intellij.ui.dsl.builder.panel
-import com.intellij.ui.layout.cellPanel
 import com.paulpanther.actiondetector.actionService
 import com.paulpanther.actiondetector.actions.ActionGroup
-import com.paulpanther.actiondetector.actions.DisplayAction
-import com.paulpanther.actiondetector.actions.displayName
+import com.paulpanther.actiondetector.actions.ActionGroupGroup
+import com.paulpanther.actiondetector.actions.ActionLeafGroup
 import java.awt.BorderLayout
 import java.awt.event.ActionEvent
 import javax.swing.JButton
@@ -58,26 +52,36 @@ class ActionToolWindow(private val project: Project) {
     }
 
     @Suppress("UnstableApiUsage")
-    private fun buildEntries(actions: List<ActionGroup>) {
+    private fun buildEntries(groups: List<ActionGroup>) {
         actionsPanel?.add(panel {
-            @Suppress("UnstableApiUsage")
-            for (group in actions) {
-                row {
-                    panel {
-                        collapsibleGroup(group.title) {
-                            buildDetails(this, group)
-                        }.apply {
-                            expanded = true
-                        }
-                    }
-                }
-            }
+            buildGroups(this, groups)
         }, BorderLayout.NORTH)
     }
 
     @Suppress("UnstableApiUsage")
-    private fun buildDetails(p: Panel, group: ActionGroup) {
-        for (action in group.actions) {
+    private fun buildGroups(p: Panel, groups: List<ActionGroup>) {
+        for (group in groups) {
+            buildGroup(p, group)
+        }
+    }
+
+    @Suppress("UnstableApiUsage")
+    private fun buildGroup(p: Panel, group: ActionGroup) {
+        p.row {
+            panel {
+                collapsibleGroup(group.title) {
+                    when (group) {
+                        is ActionLeafGroup -> buildLeafs(this, group.actions)
+                        is ActionGroupGroup -> buildGroups(this, group.groups)
+                    }
+                }.apply { expanded = true }
+            }
+        }
+    }
+
+    @Suppress("UnstableApiUsage")
+    private fun buildLeafs(p: Panel, actions: List<Action>) {
+        for (action in actions) {
             p.row {
                 label(action.name)
             }

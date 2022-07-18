@@ -9,7 +9,7 @@ class ActionLogGenerator(
     file: VirtualFile
 ) {
     private val miner = ActionMiner()
-    private val grouper: ActionGrouper = ClassContentActionGrouper()
+    private val grouper: ActionGrouper = AllActionGroupers
 
     private val snapshots = FileSnapshotProvider(file)
     private var lastNewActions = listOf<Action>()
