@@ -2,11 +2,9 @@ package com.paulpanther.actiondetector.actions
 
 import com.github.gumtreediff.actions.model.Action
 import com.github.gumtreediff.tree.Tree
-import com.jetbrains.rd.util.first
 import com.paulpanther.actiondetector.find
 import com.paulpanther.actiondetector.toMutableMap
-import java.util.LinkedList
-import java.util.Queue
+import java.util.*
 
 private data class MethodWithChange(
     val action: Action,
@@ -24,12 +22,14 @@ object ConnectedChangesGrouper: ActionGrouper {
     override fun groupActions(actions: List<Action>): List<ActionGroup> {
         val graph = buildMethodGraph(actions)
         val connections = findConnection(graph)
-        return connections.map { connection ->
-            val leafs = connection.map { method ->
-                ActionLeafGroup(method.name, method.actions)
+        return connections
+            .filter { it.size > 1 }
+            .map { connection ->
+                val leafs = connection.map { method ->
+                    ActionLeafGroup(method.name, method.actions)
+                }
+                ActionGroupGroup("Connected Methods (${connection.first().name}, ...)", leafs)
             }
-            ActionGroupGroup("Connected Methods", leafs)
-        }
     }
 
     private fun findConnection(graph: MethodGraph): List<List<MethodWithChanges>> {
