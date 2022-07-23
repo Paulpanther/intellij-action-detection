@@ -74,7 +74,7 @@ class ActionToolWindow(private val project: Project) {
                         is ActionLeafGroup -> buildLeafs(this, group.actions)
                         is ActionGroupGroup -> buildGroups(this, group.groups)
                     }
-                }.apply { expanded = true }
+                }.apply { expanded = group is ActionLeafGroup }
             }
         }
     }
