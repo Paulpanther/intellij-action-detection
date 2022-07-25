@@ -3,6 +3,7 @@ package com.paulpanther.actiondetector.actions
 import com.github.gumtreediff.actions.model.Action
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import com.paulpanther.actiondetector.Timer
 
 class ActionLogGenerator(
     project: Project,
@@ -35,15 +36,30 @@ class ActionLogGenerator(
         // find the new shortest path
 
         if (!timeline.ready()) return false
-        val next = snapshots.buildNextSnapshot() ?: return false
-        val newActions = findNewActions(next) ?: return false
+        val next = Timer.time("build snapshot") {
+            snapshots.buildNextSnapshot() ?: return false
+        }
+
+        val newActions = Timer.time("find new actions") {
+            findNewActions(next) ?: return false
+        }
 
         if (!newActions.similarTo(lastNewActions)) {
-            val actionsPerSnap = findActionsToAllPrevious(next) ?: return false
+            val actionsPerSnap = Timer.time("find actions to prev") {
+                findActionsToAllPrevious(next) ?: return false
+            }
 
             snapshots += next
-            timeline.add(next, actionsPerSnap)
-            currentShortestPath = grouper.groupActions(timeline.findShortestPath())
+
+            val tempShortestPath = Timer.time("shortest path") {
+                timeline.add(next, actionsPerSnap)
+                timeline.findShortestPath()
+            }
+
+            currentShortestPath = Timer.time("grouper") {
+                grouper.groupActions(tempShortestPath)
+            }
+
             lastNewActions = newActions
 
             return true

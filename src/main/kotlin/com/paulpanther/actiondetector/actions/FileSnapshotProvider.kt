@@ -1,6 +1,7 @@
 package com.paulpanther.actiondetector.actions
 
 import com.github.gumtreediff.gen.SyntaxException
+import com.github.gumtreediff.gen.treesitter.AbstractTreeSitterGenerator
 import com.github.gumtreediff.gen.treesitter.JavaTreeSitterTreeGenerator
 import com.github.gumtreediff.tree.Tree
 import com.intellij.notification.Notification
@@ -20,7 +21,7 @@ class FileSnapshotProvider(
     private val snapshots: MutableList<Snapshot> = mutableListOf()
 ): MutableList<Snapshot> by snapshots {
 
-    private val treeGenerator: JavaTreeSitterTreeGenerator
+    private val treeGenerator: AbstractTreeSitterGenerator
     val root get() = snapshots.firstOrNull().also {
         if (it == null) {
             Notifications.Bus.notify(Notification("Error Report", "Could not create root Snapshot", "Please remove syntax errors and clear snapshots", NotificationType.ERROR))
@@ -32,7 +33,8 @@ class FileSnapshotProvider(
         val tS = System.getProperty("tree-sitter", "/home/paul/dev/uni/ts-edit-action-detector/tree-sitter-parser/tree-sitter-parser.py")
         System.setProperty("gt.ts.path", tS)
 
-        treeGenerator = JavaTreeSitterTreeGenerator()
+//        treeGenerator = JavaTreeSitterTreeGenerator()
+        treeGenerator = KotlinTreeSitterGenerator()
     }
 
     fun buildNextSnapshot(): Snapshot? {

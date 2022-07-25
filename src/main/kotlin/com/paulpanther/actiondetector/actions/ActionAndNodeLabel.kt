@@ -45,7 +45,7 @@ class NodeLabel(
             "type_body" -> serializeParent() ?: "orphan body"
             "block" -> serializeParent() ?: "orphan block"
             "type_declaration" -> serializeTypeDeclaration()
-            else -> node.type.toString()
+            else -> node.type.toString().replace("_", " ")
         }
         return "$nodeStr$parentStr"
     }
