@@ -30,11 +30,16 @@ class FileSnapshotProvider(
     var lastId = 0
 
     init {
-        val tS = System.getProperty("tree-sitter", "/home/paul/dev/uni/ts-edit-action-detector/tree-sitter-parser/tree-sitter-parser.py")
+        val tS = System.getenv("TREE_SITTER") ?: error("Could not find tree-sitter env variable")
+        val generator = System.getenv("TREE_GENERATOR") ?: error("Could not find tree-generator env variable")
         System.setProperty("gt.ts.path", tS)
 
-//        treeGenerator = JavaTreeSitterTreeGenerator()
-        treeGenerator = KotlinTreeSitterGenerator()
+        treeGenerator = when (generator) {
+            "java" -> JavaTreeSitterTreeGenerator()
+            "kotlin" -> KotlinTreeSitterGenerator()
+            "smalltalk" -> SmalltalkTreeSitterGenerator()
+            else -> error("Invalid value for tree-generator env variable")
+        }
     }
 
     fun buildNextSnapshot(): Snapshot? {
