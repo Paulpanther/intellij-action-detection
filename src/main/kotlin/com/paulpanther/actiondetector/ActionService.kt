@@ -60,6 +60,15 @@ class ActionService(private val project: Project) {
         return gen.actionGraph
     }
 
+    fun outputShortestPath(file: VirtualFile? = project.openFile): List<ActionGroup>? {
+        file ?: return null
+
+        val gen = generators
+            .getOrPut(file) { ActionLogGenerator(project, file) }
+
+        return gen.currentShortestPath
+    }
+
     fun addRefactoringListener(listener: RefactoringListener) {
         listeners += listener
     }
