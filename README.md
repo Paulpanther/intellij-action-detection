@@ -17,6 +17,6 @@ Detect Actions and group them
 3. Do some changes (They should appear on the side under "Detected Actions". If nothing happens close the file and open it again)
 
 ## Dependency on IntelliJ
-Most of this project is independent on the editor. The dependency on IntelliJ's `VirtualFile` in `ActionLogGenerator` and `FileSnapshotProvider` could be removed by providing a custom implementation for file handles.
+Most of this project is editor-independent. The dependency on IntelliJ's `VirtualFile` in `ActionLogGenerator` and `FileSnapshotProvider` could be removed by providing a custom implementation for file handles.
 
 ![Package Diagram](editor-dependency.svg)
